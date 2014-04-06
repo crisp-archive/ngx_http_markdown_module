@@ -5,7 +5,6 @@
 
 #include "markdown_lib.h"
 
-#include <ngx_config.h>
 #include <ngx_core.h>
 #include <ngx_http.h>
 
@@ -79,19 +78,20 @@ static ngx_int_t ngx_http_markdown_handler(ngx_http_request_t *r)
         return rc;
 
     ngx_str_t content_type = ngx_string("text/html");
-    char *fn = "/Users/crisp/crisp/dev/nginx-md/html/test.md";
+    char *fn = "/home/users/zhangwanlong/bin/nginx-md/html/test.md";
     FILE *op = fopen(fn, "r");
     char md[1000];
     char ch;
-    int  fs;
+    int  fs = 0;
     while((ch = fgetc(op)) != EOF) {
         md[fs++] = ch;
     }
-    md[fs] = "\0";
+    md[fs] = '\0';
     char *html = markdown_to_string(md, 0, HTML_FORMAT);
     unsigned int nbuf = strlen(html);
     char *hbuf = ngx_palloc(r->pool, nbuf);
-    hbuf = html;
+    ngx_memcpy(hbuf, html,nbuf);
+    fclose(op);
     free(html);
     r->headers_out.status = NGX_HTTP_OK;
     r->headers_out.content_length_n = nbuf;
@@ -106,7 +106,7 @@ static ngx_int_t ngx_http_markdown_handler(ngx_http_request_t *r)
     if (b == NULL)
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
 
-    ngx_memcpy(b->pos, hbuf, nbuf);
+    b->pos = hbuf;
     b->last = b->pos + nbuf;
     b->last_buf = 1;
 
