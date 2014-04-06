@@ -79,12 +79,22 @@ static ngx_int_t ngx_http_markdown_handler(ngx_http_request_t *r)
         return rc;
 
     ngx_str_t content_type = ngx_string("text/html");
-    char *md = "*** hello markdown";
+    char *fn = "/Users/crisp/crisp/dev/nginx-md/html/test.md";
+    FILE *op = fopen(fn, "r");
+    char md[1000];
+    char ch;
+    int  fs;
+    while((ch = fgetc(op)) != EOF) {
+        md[fs++] = ch;
+    }
+    md[fs] = "\0";
     char *html = markdown_to_string(md, 0, HTML_FORMAT);
-    ngx_str_t response = ngx_string(html);
+    unsigned int nbuf = strlen(html);
+    char *hbuf = ngx_palloc(r->pool, nbuf);
+    hbuf = html;
     free(html);
     r->headers_out.status = NGX_HTTP_OK;
-    r->headers_out.content_length_n = response.len;
+    r->headers_out.content_length_n = nbuf;
     r->headers_out.content_type = content_type;
     
     rc = ngx_http_send_header(r);
@@ -92,12 +102,12 @@ static ngx_int_t ngx_http_markdown_handler(ngx_http_request_t *r)
         return rc;
 
     ngx_buf_t *b;
-    b = ngx_create_temp_buf(r->pool, response.len);
+    b = ngx_create_temp_buf(r->pool, nbuf);
     if (b == NULL)
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
 
-    ngx_memcpy(b->pos, response.data, response.len);
-    b->last = b->pos + response.len;
+    ngx_memcpy(b->pos, hbuf, nbuf);
+    b->last = b->pos + nbuf;
     b->last_buf = 1;
 
     ngx_chain_t out;
