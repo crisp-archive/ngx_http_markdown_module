@@ -15,13 +15,13 @@ Executing
 
     ./configure --add-module=/path/to/module
 
-Editing objs/Makefile, adding includes path to ALL_INCS like:
+Editing objs/Makefile, adding libglib-2.0 and libpeg-markdown includes path to ALL_INCS like:
 
     -I /home/users/zhangwanlong/private/peg-markdown/trunk \
     -I /home/users/zhangwanlong/.jumbo/lib/glib-2.0/include \
     -I /home/users/zhangwanlong/.jumbo/include/glib-2.0
 
-Adding library and its path to $(link) like:
+And also to $(link) like:
 
     -L /home/users/zhangwanlong/private/peg-markdown/trunk -lpeg-markdown \
     -L /home/users/zhangwanlong/.jumbo/lib -lglib-2.0
