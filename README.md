@@ -33,16 +33,14 @@ Add in location
     location /markdown {
         # switch
         markdown             on;
+        
+        # markdown source file root
+        markdown_root        /path/to/markdowns;
 
         # engine, currently  only peg-markdown is available
         markdown_engine      peg-markdown;
 
-        # utility functions
-        markdown_title       "Crisp Home";
-        markdown_highlight   on;
-        markdown_header_file /path/to/header.html;
-        markdown_footer_file /path/to/footer.html;
-        markdown_add_html    "<div>test</div>";
-        markdown_add_script  /path/to/js/file.js;
-        markdown_add_css     /path/to/css/file.css;
+        # utility functions, you may add any html, css and js here
+        markdown_header      /path/to/header.html;
+        markdown_footer      /path/to/footer.html;
     }
