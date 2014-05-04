@@ -33,14 +33,9 @@ Add in location
     location /markdown {
         # switch
         markdown             on;
-        
-        # markdown source file root
-        markdown_root        /path/to/markdowns;
-
-        # engine, currently  only peg-markdown is available
-        markdown_engine      peg-markdown;
-
-        # utility functions, you may add any html, css and js here
-        markdown_header      /path/to/header.html;
-        markdown_footer      /path/to/footer.html;
+        # buffer size
+        markdown_buffer_size 10240;
+        # utility functions
+        markdown_html_header /path/to/header.html;
+        markdown_html_header /path/to/footer.html;
     }
