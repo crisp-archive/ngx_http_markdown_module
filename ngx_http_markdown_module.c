@@ -63,6 +63,8 @@ static ngx_command_t ngx_http_markdown_commands[] = {
     ngx_null_command
 };
 
+#define ngx_markdown_to_string markdown_to_string
+
 static void *ngx_http_markdown_create_loc_conf(ngx_conf_t *cf);
 static ngx_int_t ngx_http_markdown_init(ngx_conf_t *cf);
 static ngx_int_t ngx_http_markdown_body_filter(ngx_http_request_t *r, ngx_chain_t *in);
@@ -119,19 +121,19 @@ static ngx_int_t ngx_http_markdown_init(ngx_conf_t *cf)
 {
     /* output filter */
     ngx_http_next_body_filter = ngx_http_top_body_filter;
-    ngx_http_top_body_filter = ngx_http_markdown_body_filter;
+    ngx_http_top_body_filter  = ngx_http_markdown_body_filter;
 
     return NGX_OK;
 }
 
-static ngx_int_t 
-ngx_http_markdown_body_filter(ngx_http_request_t *r, ngx_chain_t *in) 
+static ngx_int_t ngx_http_markdown_body_filter(ngx_http_request_t *r, ngx_chain_t *in) 
 {
     ngx_http_markdown_conf_t *cf;
     ngx_http_markdown_ctx_t  *ctx;
     /* get conf */
     cf = (ngx_http_markdown_conf_t *)ngx_http_get_module_loc_conf(r, ngx_http_markdown_module);
     if (cf == NULL) {
+        ngx_log_error(NGX_LOG_ALERT, r->connection->log, 0, "ngx_http_get_module_loc_conf failed");
         return ngx_http_next_body_filter(r, in);
     }
 
@@ -196,31 +198,36 @@ ngx_http_markdown_body_filter(ngx_http_request_t *r, ngx_chain_t *in)
             ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "skip empty buf");
         }
         else {
+            /* memcpy buf to markdown_buf */
             if (ctx->markdown_pos + iter->buf->last - iter->buf->pos >= cf->md_buffer_size) {
                 ngx_log_error(NGX_LOG_ALERT, r->connection->log, 0, "markdown file is overbuf!");
                 return ngx_http_next_body_filter(r, in);
             }
-
-            memcpy(ctx->markdown_buf + ctx->markdown_pos, iter->buf->pos, iter->buf->last - iter->buf->pos);
+            ngx_memcpy(ctx->markdown_buf + ctx->markdown_pos, iter->buf->pos, iter->buf->last - iter->buf->pos);
             ctx->markdown_pos += iter->buf->last - iter->buf->pos;
         }
         
         iter->buf->pos = iter->buf->last;
 
         if (iter->buf->last_buf) {
-            u_char *html = (u_char *)markdown_to_string((char *)ctx->markdown_buf, 0, HTML_FORMAT);
-            size_t  nbuf = strlen((const char *)html);
+            /* convert buf to html */
+            u_char *html = (u_char *)ngx_markdown_to_string((char *)ctx->markdown_buf, 0, HTML_FORMAT);
+            if (html == NULL) {
+                ngx_log_error(NGX_LOG_ALERT, r->connection->log, 0, "markdown_to_string failed");
+                return ngx_http_next_body_filter(r, in);
+            }
+            size_t  nbuf = ngx_strlen(html);
             u_char *hbuf = (u_char *)ngx_palloc(r->pool, nbuf);
             ngx_memcpy(hbuf, html, nbuf);
             free(html);
-
+            
             ngx_chain_t *rc = ngx_alloc_chain_link(r->pool);
             if (rc == NULL) {
                 return NGX_ERROR;
             }
 
             rc->next = NULL;
-            rc->buf = (ngx_buf_t *)ngx_calloc_buf(r->pool);
+            rc->buf = ngx_calloc_buf(r->pool);
             if (rc->buf == NULL) {
                 return NGX_ERROR;
             }
@@ -229,12 +236,12 @@ ngx_http_markdown_body_filter(ngx_http_request_t *r, ngx_chain_t *in)
             rc->buf->last_buf = 0;
             rc->buf->pos      = hbuf;
             rc->buf->last     = hbuf + nbuf;
+            
             /* set filter flag */
             ctx->is_filtered  = 1;
 
             return ngx_http_next_body_filter(r, rc);
         }
-          
     }
 
     return ngx_http_next_body_filter(r, in);
