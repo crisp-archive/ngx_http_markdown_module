@@ -26,9 +26,7 @@ And also to $(link) like:
     -L /home/users/zhangwanlong/private/peg-markdown/trunk -lpeg-markdown \
     -L /home/users/zhangwanlong/.jumbo/lib -lglib-2.0
 
-* Conf (NOT IMPLEMENTED YET)
-
-Add in location
+* Configuration
 
     location /markdown {
         # switch
