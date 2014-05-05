@@ -47,7 +47,7 @@ static ngx_command_t ngx_http_markdown_commands[] = {
     {
         ngx_string("markdown_html_header"),
         NGX_HTTP_LOC_CONF | NGX_CONF_TAKE1,
-        ngx_conf_set_str_slot,
+        ngx_conf_set_path_slot,
         NGX_HTTP_LOC_CONF_OFFSET,
         offsetof(ngx_http_markdown_conf_t, md_html_header),
         NULL
@@ -55,7 +55,7 @@ static ngx_command_t ngx_http_markdown_commands[] = {
     {
         ngx_string("markdown_html_footer"),
         NGX_HTTP_LOC_CONF | NGX_CONF_TAKE1,
-        ngx_conf_set_str_slot,
+        ngx_conf_set_path_slot,
         NGX_HTTP_LOC_CONF_OFFSET,
         offsetof(ngx_http_markdown_conf_t, md_html_footer),
         NULL
