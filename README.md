@@ -15,18 +15,20 @@ Executing
 
     ./configure --add-module=/path/to/module
 
-Editing objs/Makefile, adding libglib-2.0 and libpeg-markdown includes path to ALL_INCS like:
+Editing objs/Makefile, adding libglib-2.0 and libpeg-markdown includes path to ALL_INCS:
 
     -I /home/users/zhangwanlong/private/peg-markdown/trunk \
     -I /home/users/zhangwanlong/.jumbo/lib/glib-2.0/include \
     -I /home/users/zhangwanlong/.jumbo/include/glib-2.0
 
-And also to $(link) like:
+And library path to $(link):
 
     -L /home/users/zhangwanlong/private/peg-markdown/trunk -lpeg-markdown \
     -L /home/users/zhangwanlong/.jumbo/lib -lglib-2.0
 
 * Configuration
+
+ngx_http_markdown_module is currently available in loc only.
 
     location /markdown {  
         # switch  
