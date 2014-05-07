@@ -31,11 +31,7 @@ And library path to $(link):
 ngx_http_markdown_module conf 
 
     location /markdown {  
-        # switch  
         markdown             on;  
-        # buffer size  
-        markdown_buffer_size 10240;  
-        # utility functions  
         markdown_html_header /path/to/header.html;  
         markdown_html_header /path/to/footer.html;  
     }
