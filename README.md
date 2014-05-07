@@ -28,7 +28,7 @@ And library path to $(link):
 
 * Configuration
 
-ngx_http_markdown_module is currently available in loc only.
+ngx_http_markdown_module conf 
 
     location /markdown {  
         # switch  
