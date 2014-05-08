@@ -8,9 +8,6 @@
 
 #include "markdown_lib.h"
 
-static const ngx_str_t ngx_markdown_default_html_header = ngx_string("./html/header.html");
-static const ngx_str_t ngx_markdown_default_html_footer = ngx_string("./html/footer.html");
-
 #define ngx_markdown_to_string markdown_to_string
 static void *ngx_http_markdown_create_loc_conf(ngx_conf_t *cf);
 static char *ngx_http_markdown_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child);
@@ -150,27 +147,39 @@ static ngx_int_t ngx_http_markdown_handler(ngx_http_request_t *r)
     ngx_str_t   fn = ngx_string("./html/markdown/doc/about.md");
 
     /* get header */
-/*
+    /*
     if (cf->markdown_html_header.data) {
         or       = ngx_http_markdown_open_file(cf->markdown_html_header, &f);
-        header   = ngx_palloc(r->pool, f.info.st_size + 1);
+        nheader  = f.info.st_size + 1; 
+        header   = ngx_palloc(r->pool, nheader);
         if (header == NULL) {
             return NGX_DECLINED;
         }
         fr       = ngx_http_markdown_get_file(f, header);
-        nheader  = ngx_strlen(header); 
     }
-    * get footer *
+    */
+    /* get foofer */
+    /*
     if (cf->markdown_html_footer.data) {
         or       = ngx_http_markdown_open_file(cf->markdown_html_footer, &f);
-        footer   = ngx_palloc(r->pool, f.info.st_size + 1);
+        nfooter  = f.info.st_size + 1;
+        footer   = ngx_palloc(r->pool, nfooter); 
         fr       = ngx_http_markdown_get_file(f, footer);
-        nfooter  = ngx_strlen(footer); 
-    }*/
+    }
+    */
     /* get markdown */
     or = ngx_http_markdown_open_file(fn, &f);
+    if (or == NGX_ERROR) {
+        return NGX_HTTP_NOT_FOUND;
+    }
     markdown = ngx_palloc(r->pool, f.info.st_size + 1);
+    if (markdown == NULL) {
+        return NGX_HTTP_INTERNAL_SERVER_ERROR;
+    }
     fr = ngx_http_markdown_get_file(f, markdown);
+    if (fr != f.info.st_size) {
+        ;
+    }
 
     u_char *html   = (u_char *)ngx_markdown_to_string((char *)markdown, 0, HTML_FORMAT);
     size_t  nhtml  = ngx_strlen(html);
