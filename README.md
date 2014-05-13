@@ -1,19 +1,39 @@
 ngx_http_markdown_module
 ========================
 
-#### UNDER DEVELOPING
-
-* Introduction
+#### Introduction
 
 ngx_http_markdown_module is a nginx extension,
 which enables you to directly give response
 by interpreting local Markdown file to html.
 
-* Compiling
+#### Dependencies
 
-Executing
+* peg-markdown
 
-    ./configure --add-module=/path/to/module
+#### Compiling
+
+```
+./configure --add-module=/path/to/module
+make
+make install
+```
+
+#### Configuration
+
+ngx_http_markdown_module conf 
+
+```
+location /markdown {  
+    markdown             on;  
+    markdown_html_header /path/to/header.html;  
+    markdown_html_header /path/to/footer.html;  
+}
+```
+
+#### Troubleshooting
+
+* peg-markdown may have problem in building
 
 Editing objs/Makefile, adding libglib-2.0 and libpeg-markdown includes path to ALL_INCS:
 
@@ -26,12 +46,5 @@ And library path to $(link):
     -L /home/users/zhangwanlong/private/peg-markdown/trunk -lpeg-markdown \
     -L /home/users/zhangwanlong/.jumbo/lib -lglib-2.0
 
-* Configuration
+* when master_process is on, the use of markdown_html_header will cause crash.
 
-ngx_http_markdown_module conf 
-
-    location /markdown {  
-        markdown             on;  
-        markdown_html_header /path/to/header.html;  
-        markdown_html_header /path/to/footer.html;  
-    }

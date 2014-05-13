@@ -5,8 +5,9 @@
 
 #include <ngx_core.h>
 #include <ngx_http.h>
+#include <errno.h>
 
-#include "markdown_lib.h"
+#include "peg-markdown/markdown_lib.h"
 
 #define ngx_markdown_to_string markdown_to_string
 static void *ngx_http_markdown_create_loc_conf(ngx_conf_t *cf);
@@ -139,34 +140,35 @@ static ngx_int_t ngx_http_markdown_handler(ngx_http_request_t *r)
     ngx_int_t   fr;
     ngx_int_t   or;
     ngx_file_t  f;
-    u_char     *markdown;
-    u_char     *header = NULL;
-    u_char     *footer = NULL;
-    size_t      nheader = 0;
-    size_t      nfooter = 0;
-    ngx_str_t   fn = ngx_string("./html/markdown/doc/about.md");
+    u_char *markdown;
+    u_char *header;
+    u_char *footer;
+    size_t nheader = 0;
+    size_t nfooter = 0;
+    /* parse uri */
+    ngx_str_t fn = ngx_null_string;
+    size_t    root;
+    ngx_http_map_uri_to_path(r, &fn, &root, 0);
 
     /* get header */
-    /*
     if (cf->markdown_html_header.data) {
-        or       = ngx_http_markdown_open_file(cf->markdown_html_header, &f);
-        nheader  = f.info.st_size + 1; 
-        header   = ngx_palloc(r->pool, nheader);
+        or = ngx_http_markdown_open_file(cf->markdown_html_header, &f);
+        nheader = f.info.st_size + 1; 
+        header = ngx_palloc(r->pool, nheader);
         if (header == NULL) {
             return NGX_DECLINED;
         }
-        fr       = ngx_http_markdown_get_file(f, header);
+        fr = ngx_http_markdown_get_file(f, header);
     }
-    */
+    
     /* get foofer */
-    /*
     if (cf->markdown_html_footer.data) {
-        or       = ngx_http_markdown_open_file(cf->markdown_html_footer, &f);
-        nfooter  = f.info.st_size + 1;
-        footer   = ngx_palloc(r->pool, nfooter); 
-        fr       = ngx_http_markdown_get_file(f, footer);
+        or = ngx_http_markdown_open_file(cf->markdown_html_footer, &f);
+        nfooter = f.info.st_size + 1;
+        footer = ngx_palloc(r->pool, nfooter); 
+        fr = ngx_http_markdown_get_file(f, footer);
     }
-    */
+
     /* get markdown */
     or = ngx_http_markdown_open_file(fn, &f);
     if (or == NGX_ERROR) {
@@ -177,20 +179,24 @@ static ngx_int_t ngx_http_markdown_handler(ngx_http_request_t *r)
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
     fr = ngx_http_markdown_get_file(f, markdown);
-    if (fr != f.info.st_size) {
-        ;
+    if ( fr < 0 || fr != f.info.st_size) {
+        return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
 
     u_char *html   = (u_char *)ngx_markdown_to_string((char *)markdown, 0, HTML_FORMAT);
     size_t  nhtml  = ngx_strlen(html);
     size_t  ntotal = nhtml + nheader + nfooter;
+    size_t  bufpos = 0;
     u_char *hbuf   = ngx_palloc(r->pool, ntotal);
     if (nheader) {
-        ngx_memcpy(hbuf, header, nheader);
+        ngx_memcpy(hbuf + bufpos, header, nheader);
+        bufpos += nheader;
     }
-    ngx_memcpy(hbuf, html, nhtml);
+    ngx_memcpy(hbuf + bufpos, html, nhtml);
+    bufpos += nhtml;
     if (nfooter) {
-        ngx_memcpy(hbuf, footer, nfooter);
+        ngx_memcpy(hbuf + bufpos, footer, nfooter);
+        bufpos += nfooter;
     }
     ngx_free(html);
 
@@ -225,6 +231,9 @@ static ngx_int_t ngx_http_markdown_open_file(const ngx_str_t fn, ngx_file_t *f)
     ngx_fd_t        fd;
     ngx_file_info_t fi;
     fd = ngx_open_file(fn.data, NGX_FILE_RDONLY, NGX_FILE_OPEN, 0);
+    if (fd < 0 || (errno !=0 && errno != EEXIST)) {
+        return NGX_ERROR;
+    }
     if (ngx_fd_info(fd, &fi) == NGX_FILE_ERROR) {
         return NGX_ERROR;
     }
