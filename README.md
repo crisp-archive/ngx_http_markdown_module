@@ -46,5 +46,8 @@ And library path to $(link):
     -L /home/users/zhangwanlong/private/peg-markdown/trunk -lpeg-markdown \
     -L /home/users/zhangwanlong/.jumbo/lib -lglib-2.0
 
+
+#### Known Issues
+
 * when master_process is on, the use of markdown_html_header will cause crash.
 
