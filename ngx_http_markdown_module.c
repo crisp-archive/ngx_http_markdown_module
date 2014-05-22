@@ -153,10 +153,13 @@ static ngx_int_t ngx_http_markdown_handler(ngx_http_request_t *r)
     /* get header */
     if (cf->markdown_html_header.data) {
         or = ngx_http_markdown_open_file(cf->markdown_html_header, &f);
+        if (or == NGX_ERROR) {
+            return NGX_HTTP_NOT_FOUND;
+        }
         nheader = f.info.st_size + 1; 
         header = ngx_palloc(r->pool, nheader);
         if (header == NULL) {
-            return NGX_DECLINED;
+            return NGX_HTTP_INTERNAL_SERVER_ERROR;
         }
         fr = ngx_http_markdown_get_file(f, header);
     }
@@ -164,8 +167,14 @@ static ngx_int_t ngx_http_markdown_handler(ngx_http_request_t *r)
     /* get foofer */
     if (cf->markdown_html_footer.data) {
         or = ngx_http_markdown_open_file(cf->markdown_html_footer, &f);
+        if (or == NGX_ERROR) {
+            return NGX_HTTP_NOT_FOUND;
+        }
         nfooter = f.info.st_size + 1;
-        footer = ngx_palloc(r->pool, nfooter); 
+        footer = ngx_palloc(r->pool, nfooter);
+        if (footer == NULL) {
+            return NGX_HTTP_INTERNAL_SERVER_ERROR;
+        }
         fr = ngx_http_markdown_get_file(f, footer);
     }
 
