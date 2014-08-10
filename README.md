@@ -35,5 +35,5 @@ location /markdown {
 
 * peg-markdown may have problem in building
 
-Editing __config__, editing CORE_INCS and CORE_LIBS
+Editing CORE_INCS and CORE_LIBS in config file.
 
