@@ -27,7 +27,7 @@ ngx_http_markdown_module conf
 location /markdown {  
     markdown             on;  
     markdown_html_header /path/to/header.html;  
-    markdown_html_header /path/to/footer.html;  
+    markdown_html_footer /path/to/footer.html;  
 }
 ```
 
