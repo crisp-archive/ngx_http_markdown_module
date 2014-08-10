@@ -35,13 +35,5 @@ location /markdown {
 
 * peg-markdown may have problem in building
 
-Editing objs/Makefile, adding libglib-2.0 and libpeg-markdown includes path to ALL_INCS:
-
-    -I /home/users/zhangwanlong/.jumbo/lib/glib-2.0/include \
-    -I /home/users/zhangwanlong/.jumbo/include/glib-2.0
-
-And library path to $(link):
-
-    -L /home/users/zhangwanlong/.jumbo/lib -lglib-2.0
-
+Editing __config__, editing CORE_INCS and CORE_LIBS
 
