@@ -13,6 +13,9 @@ by interpreting local Markdown file to html.
 
 #### Compiling
 
+Editing CORE_INCS and CORE_LIBS in config file,
+because it may have problem in building peg-markdown.
+
 ```
 ./configure --add-module=/path/to/module
 make
@@ -35,5 +38,4 @@ location /markdown {
 
 * peg-markdown may have problem in building
 
-Editing CORE_INCS and CORE_LIBS in config file.
 
