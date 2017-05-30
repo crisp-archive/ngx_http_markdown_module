@@ -17,14 +17,6 @@ by interpreting local Markdown file to html.
 
 ### Build Prerequisites
 
-#### Build `peg-markdown`
-
-```
-$ git submodule update --init --recursive
-$ cd peg-markdown
-$ make library
-```
-
 #### Install `glib-2.0`
 
 For macOS:
@@ -38,6 +30,14 @@ For Ubuntu Linux:
 ```
 $ sudo apt-get update
 $ sudo apt-get install glib2.0
+```
+
+#### Build `peg-markdown`
+
+```
+$ git submodule update --init --recursive
+$ cd peg-markdown
+$ make library
 ```
 
 ### Build Nginx
