@@ -1,28 +1,56 @@
-ngx_http_markdown_module
-========================
+# ngx_http_markdown_module
 
-#### Introduction
+## Introduction
 
 ngx_http_markdown_module is a nginx extension,
 which enables you to directly give response
 by interpreting local Markdown file to html.
 
-#### Dependencies
-
 * peg-markdown
 
-#### Compiling
+## Build
 
-Editing CORE_INCS and CORE_LIBS in config file,
-because it may have problem in building peg-markdown.
+### Prerequisites
+
+* pkg-config
+* awk
+* glib-2.0
+* peg-markdown
+
+### Build Prerequisites
+
+#### Build `peg-markdown`
 
 ```
-./configure --add-module=/path/to/module
-make
-make install
+$ git submodule update --init --recursive
+$ cd peg-markdown
+$ make library
 ```
 
-#### Configuration
+#### Install `glib-2.0`
+
+For macOS:
+
+```
+$ brew install glib
+```
+
+For Ubuntu Linux:
+
+```
+$ sudo apt-get update
+$ sudo apt-get install glib2.0
+```
+
+### Build Nginx
+
+```
+$ ./configure --add-module=/path/to/ngx_http_markdown_module
+$ make
+$ [sudo] make install
+```
+
+## Configuration
 
 ngx_http_markdown_module conf 
 
@@ -34,8 +62,6 @@ location /markdown {
 }
 ```
 
-#### Troubleshooting
+## License
 
-* peg-markdown may have problem in building
-
-
+* BSD-2-Clause
