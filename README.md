@@ -2,9 +2,7 @@
 
 ## Introduction
 
-ngx_http_markdown_module is a nginx extension,
-which enables you to directly give response
-by interpreting local Markdown file to html.
+`ngx_http_markdown_module` is a simple Nginx module, which serves local Markdown files, converting them to html, and make response with headers and footers.
 
 ## Build
 
